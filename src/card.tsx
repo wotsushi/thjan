@@ -1,3 +1,5 @@
+import styled from "styled-components";
+
 import reimu from "./assets/0reimu.png";
 import marisa from "./assets/1marisa.png";
 import rumia from "./assets/2rumia.png";
@@ -85,8 +87,8 @@ import mamizou from "./assets/83mamizou.png";
 
 export class Card {
   constructor(private src: string, private name: string) {}
-  img() {
-    return <img src={this.src} alt={this.name} />;
+  img({ mini }: { mini?: boolean } = {}) {
+    return <Img key={this.src} src={this.src} alt={this.name} $mini={mini} />;
   }
 }
 
@@ -180,3 +182,7 @@ export const Cards = {
   miko: card(miko, "神子"),
   mamizou: card(mamizou, "マミゾウ"),
 } as const satisfies Record<string, Card>;
+
+const Img = styled.img<{ $mini?: boolean }>`
+  width: ${({ $mini }) => ($mini ? "38px" : "81px")};
+`;
