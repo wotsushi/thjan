@@ -1,10 +1,34 @@
 import styled from "styled-components";
 import { Bonus } from "./Bonus";
 import { useState } from "react";
+import { Cards, type Card } from "./card";
+import { Player } from "./Player";
+
+export type Player = {
+  id: number;
+  partner: Card;
+  name: string;
+  point: number;
+};
 
 export function Game() {
   const [kyoku] = useState(1);
   const [honba] = useState(0);
+  const [players, setPlayers] = useState<Player[]>(
+    [...Array(4)].map((_, i) => ({
+      id: i,
+      partner: Cards.reimu,
+      name: `プレイヤー${i}`,
+      point: 20000,
+    }))
+  );
+  const mutatePlayers = (mutator: (players: Player[]) => void) => {
+    setPlayers((players) => {
+      const copy = [...players];
+      mutator(copy);
+      return copy;
+    });
+  };
   return (
     <div>
       <Header>
@@ -14,6 +38,19 @@ export function Game() {
         </Round>
         <Bonus />
       </Header>
+      <div>
+        {players.map((player, i) => (
+          <Player
+            key={player.id}
+            player={player}
+            setName={(name) =>
+              mutatePlayers((current) => {
+                current[i].name = name;
+              })
+            }
+          />
+        ))}
+      </div>
     </div>
   );
 }
