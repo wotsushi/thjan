@@ -1,13 +1,13 @@
 import styled from "styled-components";
 
 import "./App.css";
-import { Bonus } from "./Bonus";
 import { HandList } from "./HandList";
+import { Game } from "./Game";
 
 function App() {
   return (
     <Root>
-      <Bonus />
+      <Game />
       <HandList />
     </Root>
   );
