@@ -3,28 +3,38 @@ import { Bonus } from "./Bonus";
 import { useState } from "react";
 import { Cards, type Card } from "./card";
 import { Player } from "./Player";
+import { Control } from "./Control";
+
+export type Game = {
+  kyoku: number;
+  honba: number;
+  players: Player[];
+};
 
 export type Player = {
   id: number;
   partner: Card;
   name: string;
-  point: number;
+  score: number;
 };
 
 export function Game() {
-  const [kyoku] = useState(1);
-  const [honba] = useState(0);
-  const [players, setPlayers] = useState<Player[]>(
-    [...Array(4)].map((_, i) => ({
+  const [game, setGame] = useState<Game>({
+    kyoku: 1,
+    honba: 0,
+    players: [...Array(4)].map((_, i) => ({
       id: i,
       partner: Cards.reimu,
       name: `プレイヤー${i}`,
-      point: 20000,
-    }))
-  );
-  const mutatePlayers = (mutator: (players: Player[]) => void) => {
-    setPlayers((players) => {
-      const copy = [...players];
+      score: 20000,
+    })),
+  });
+  const mutateGame = (mutator: (game: Game) => void) => {
+    setGame((game) => {
+      const copy = {
+        ...game,
+        players: game.players.map((p) => ({ ...p })),
+      };
       mutator(copy);
       return copy;
     });
@@ -33,24 +43,25 @@ export function Game() {
     <div>
       <Header>
         <Round>
-          <Kyoku>第{kyoku}局</Kyoku>
-          <Honba>{honba}本場</Honba>
+          <Kyoku>第{game.kyoku}局</Kyoku>
+          <Honba>{game.honba}本場</Honba>
         </Round>
         <Bonus />
       </Header>
       <div>
-        {players.map((player, i) => (
+        {game.players.map((player, i) => (
           <Player
             key={player.id}
             player={player}
             setName={(name) =>
-              mutatePlayers((current) => {
-                current[i].name = name;
+              mutateGame((current) => {
+                current.players[i].name = name;
               })
             }
           />
         ))}
       </div>
+      <Control players={game.players} mutateGame={mutateGame} />
     </div>
   );
 }

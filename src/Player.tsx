@@ -20,7 +20,7 @@ export function Player({
             onChange={(e) => setName(e.target.value)}
           ></Name>
         </div>
-        <Point>{player.point.toLocaleString()}</Point>
+        <Point>{player.score.toLocaleString()}</Point>
       </Right>
     </Root>
   );
