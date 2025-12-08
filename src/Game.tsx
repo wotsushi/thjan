@@ -41,7 +41,7 @@ export function Game() {
   };
   return (
     <div>
-      <Header>
+      <Header key={`${game.kyoku}-${game.honba}`}>
         <Round>
           <Kyoku>第{game.kyoku}局</Kyoku>
           <Honba>{game.honba}本場</Honba>
@@ -68,6 +68,7 @@ export function Game() {
 
 const Header = styled.div`
   display: flex;
+  column-gap: 20px;
 `;
 
 const Round = styled.div`
