@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Cards, type Card } from "./card";
 import { Player } from "./Player";
 import { Control } from "./Control";
+import { PartnerModal } from "./PartnerModal";
 
 export type Game = {
   kyoku: number;
@@ -39,6 +40,8 @@ export function Game() {
       return copy;
     });
   };
+  const [partnerModal, setPartnerModal] = useState<number | null>(null);
+
   return (
     <div>
       <Header key={`${game.kyoku}-${game.honba}`}>
@@ -58,10 +61,22 @@ export function Game() {
                 current.players[i].name = name;
               })
             }
+            showPartnerModal={() => setPartnerModal(player.id)}
           />
         ))}
       </div>
       <Control players={game.players} mutateGame={mutateGame} />
+      <PartnerModal
+        isOpen={partnerModal !== null}
+        setPartner={(card: Card) =>
+          mutateGame((current) => {
+            if (partnerModal !== null) {
+              current.players[partnerModal].partner = card;
+            }
+          })
+        }
+        onClose={() => setPartnerModal(null)}
+      />
     </div>
   );
 }

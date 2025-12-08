@@ -4,13 +4,15 @@ import type { Player } from "./Game";
 export function Player({
   player,
   setName,
+  showPartnerModal,
 }: {
   player: Player;
   setName: (name: string) => void;
+  showPartnerModal: () => void;
 }) {
   return (
     <Root>
-      {player.partner.img()}
+      <Left onClick={showPartnerModal}>{player.partner.img()}</Left>
       <Right>
         <div>
           <Name
@@ -29,6 +31,8 @@ export function Player({
 const Root = styled.div`
   display: flex;
 `;
+
+const Left = styled.div``;
 
 const Right = styled.div`
   display: flex;

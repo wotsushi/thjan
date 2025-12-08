@@ -86,7 +86,7 @@ import miko from "./assets/82miko.png";
 import mamizou from "./assets/83mamizou.png";
 
 export class Card {
-  constructor(private src: string, private name: string) {}
+  constructor(private src: string, public name: string) {}
   img({ mini }: { mini?: boolean } = {}) {
     return <Img key={this.src} src={this.src} alt={this.name} $mini={mini} />;
   }
