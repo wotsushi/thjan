@@ -105,6 +105,9 @@ export function Control({
             game.kyoku = winner === parent ? game.kyoku : game.kyoku + 1;
             game.honba = winner === parent ? game.honba + 1 : 0;
           });
+          setWinner(null);
+          setLoser(null);
+          setPoint(null);
         }}
       >
         清算
