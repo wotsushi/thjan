@@ -19,18 +19,13 @@ export function Control({
           <Title>和了</Title>
           <Options>
             {players.map(({ name, id }) => (
-              <div
+              <Radio
                 key={id}
+                name="winner"
+                label={name}
+                checked={winner === id}
                 onClick={() => setWinner(winner === id ? null : id)}
-              >
-                <input
-                  type="radio"
-                  name="winner"
-                  checked={winner === id}
-                  readOnly
-                />
-                <Option>{name}</Option>
-              </div>
+              />
             ))}
           </Options>
         </Selector>
@@ -38,15 +33,13 @@ export function Control({
           <Title>放銃</Title>
           <Options>
             {players.map(({ name, id }) => (
-              <div key={id} onClick={() => setLoser(loser === id ? null : id)}>
-                <input
-                  type="radio"
-                  name="loser"
-                  checked={loser === id}
-                  readOnly
-                />
-                <Option>{name}</Option>
-              </div>
+              <Radio
+                key={id}
+                name="loser"
+                label={name}
+                checked={loser === id}
+                onClick={() => setLoser(loser === id ? null : id)}
+              />
             ))}
           </Options>
         </Selector>
@@ -143,11 +136,59 @@ const Title = styled.span`
 const Options = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 4px;
 `;
 
-const Option = styled.label`
+const RadioLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
   font-size: 20px;
 `;
+
+const RadioInput = styled.input.attrs({ type: "radio" })`
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #bbb;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  margin: 0;
+
+  &::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: transform 0.2s ease-in-out;
+    background-color: #4f46e5;
+  }
+
+  &:checked {
+    border-color: #4f46e5;
+  }
+
+  &:checked::before {
+    transform: scale(1);
+  }
+`;
+
+export default function Radio({
+  label,
+  ...props
+}: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <RadioLabel>
+      <RadioInput {...props} />
+      {label}
+    </RadioLabel>
+  );
+}
 
 const PointContainer = styled.div`
   display: flex;
