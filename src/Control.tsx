@@ -66,7 +66,11 @@ export function Control({
       </PointContainer>
       <Clearance
         type="button"
-        disabled={winner !== null && point === null}
+        disabled={
+          (winner !== null && point === null) ||
+          winner === loser ||
+          (winner === null && loser !== null)
+        }
         onClick={() => {
           mutateGame((game) => {
             // 流局
