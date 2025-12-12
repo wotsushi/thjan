@@ -62,7 +62,7 @@ export function Control({
         type="button"
         disabled={
           (winner !== null && point === null) ||
-          winner === loser ||
+          (winner !== null && winner === loser) ||
           (winner === null && loser !== null)
         }
         onClick={() => {
