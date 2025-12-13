@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import type { Player } from "./Game";
+import { UnknownCard } from "./card";
 
 export function Player({
   player,
@@ -12,7 +13,9 @@ export function Player({
 }) {
   return (
     <Root>
-      <Left onClick={showPartnerModal}>{player.partner.img()}</Left>
+      <Left onClick={showPartnerModal}>
+        {player.partner?.img() ?? <UnknownCard />}
+      </Left>
       <Right>
         <div>
           <Name
@@ -30,6 +33,7 @@ export function Player({
 
 const Root = styled.div`
   display: flex;
+  gap: 8px;
 `;
 
 const Left = styled.div``;
@@ -42,6 +46,7 @@ const Right = styled.div`
 
 const Name = styled.input`
   font-size: 24px;
+  width: 220px;
 `;
 
 const Point = styled.div`

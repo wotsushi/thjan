@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Card, Cards } from "./card";
+import { Card, Cards, UnknownCard } from "./card";
 import { useState } from "react";
 
 export function Bonus() {
@@ -38,11 +38,4 @@ const BonusContainer = styled.div`
 
 const BonusLabel = styled.div`
   display: block;
-`;
-
-const UnknownCard = styled.div`
-  width: 72px;
-  height: 92px;
-  background-color: gray;
-  border-radius: 8px;
 `;

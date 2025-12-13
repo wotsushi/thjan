@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Bonus } from "./Bonus";
 import { useState } from "react";
-import { Cards, type Card } from "./card";
+import { type Card } from "./card";
 import { Player } from "./Player";
 import { Control } from "./Control";
 import { PartnerModal } from "./PartnerModal";
@@ -14,19 +14,19 @@ export type Game = {
 
 export type Player = {
   id: number;
-  partner: Card;
+  partner: Card | null;
   name: string;
   score: number;
 };
 
 export function Game() {
   const [game, setGame] = useState<Game>({
-    kyoku: 1,
+    kyoku: 0,
     honba: 0,
     players: [...Array(4)].map((_, i) => ({
       id: i,
-      partner: Cards.reimu,
-      name: `プレイヤー${i}`,
+      partner: null,
+      name: "",
       score: 20000,
     })),
   });
@@ -65,7 +65,7 @@ export function Game() {
           />
         ))}
       </div>
-      <Control players={game.players} mutateGame={mutateGame} />
+      <Control game={game} mutateGame={mutateGame} />
       <PartnerModal
         isOpen={partnerModal !== null}
         setPartner={(card: Card) =>

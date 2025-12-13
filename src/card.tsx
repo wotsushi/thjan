@@ -186,3 +186,10 @@ export const Cards = {
 const Img = styled.img<{ $mini?: boolean }>`
   width: ${({ $mini }) => ($mini ? "38px" : "81px")};
 `;
+
+export const UnknownCard = styled.div`
+  width: 72px;
+  height: 92px;
+  background-color: gray;
+  border-radius: 8px;
+`;

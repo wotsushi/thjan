@@ -3,10 +3,10 @@ import type { Game, Player } from "./Game";
 import { useState } from "react";
 
 export function Control({
-  players,
+  game,
   mutateGame,
 }: {
-  players: Player[];
+  game: Game;
   mutateGame: (mutator: (game: Game) => void) => void;
 }) {
   const [winner, setWinner] = useState<number | null>(null);
@@ -19,7 +19,7 @@ export function Control({
         <Selector>
           <Title>和了</Title>
           <Options>
-            {players.map(({ name, id }) => (
+            {game.players.map(({ name, id }) => (
               <Radio
                 key={id}
                 name="winner"
@@ -33,7 +33,7 @@ export function Control({
         <Selector>
           <Title>放銃</Title>
           <Options>
-            {players.map(({ name, id }) => (
+            {game.players.map(({ name, id }) => (
               <Radio
                 key={id}
                 name="loser"
@@ -58,74 +58,104 @@ export function Control({
           }
         />
       </PointContainer>
-      <Clearance
-        type="button"
-        disabled={
-          (winner !== null && point === null) ||
-          (winner !== null && winner === loser) ||
-          (winner === null && loser !== null)
-        }
-        onClick={() => {
-          mutateGame((game) => {
-            const parent = players[game.kyoku - 1].id;
-            const mutateScore = () => {
-              if (winner === null) {
+      {game.kyoku === 0 ? (
+        <Button
+          type="button"
+          disabled={
+            game.players.filter(
+              ({ partner, name }) => partner !== null && name !== null
+            ).length < 2
+          }
+          onClick={() =>
+            mutateGame((game) => {
+              game.kyoku = 1;
+              game.honba = 0;
+              game.players.forEach((player) => {
+                player.score = 20000;
+              });
+              const players = shufflePlayers(
+                game.players.filter(({ partner }) => partner !== null)
+              );
+              game.players = players.concat(
+                game.players.filter(({ partner }) => partner === null)
+              );
+            })
+          }
+        >
+          開始
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          disabled={
+            (winner !== null && point === null) ||
+            (winner !== null && winner === loser) ||
+            (winner === null && loser !== null)
+          }
+          onClick={() => {
+            mutateGame((game) => {
+              const parent = game.players[game.kyoku - 1].id;
+              const mutateScore = () => {
+                if (winner === null) {
+                  return;
+                }
+                const wp = game.players.find(({ id }) => id === winner);
+                const lp = game.players.find(({ id }) => id === loser);
+                if (point === null || wp === undefined) return;
+
+                const baseScore = scoreTable[point] / 4;
+                // ツモ
+                if (lp === undefined) {
+                  let score = 0;
+                  game.players.forEach((p) => {
+                    if (p.id === winner) return;
+                    const s =
+                      (winner === parent || p.id === parent ? 2 : 1) *
+                        baseScore +
+                      100 * game.honba;
+                    p.score -= s;
+                    score += s;
+                  });
+                  wp.score += score;
+                }
+                // ロン
+                else {
+                  const score =
+                    (winner === parent ? 6 : 4) * baseScore +
+                    100 * game.honba * (game.players.length - 1);
+                  lp.score -= score;
+                  wp.score += score;
+                }
+              };
+              mutateScore();
+
+              const isParentTop =
+                game.players.toSorted((a, b) => b.score - a.score)[0].id ===
+                parent;
+
+              if (
+                game.players.some((p) => p.score < 0) || // トビがいれば終了
+                (game.kyoku === game.players.length &&
+                  (isParentTop || (winner !== null && winner !== parent))) // オーラス
+              ) {
+                game.kyoku = 0;
+                game.honba = 0;
                 return;
               }
-              const wp = game.players.find(({ id }) => id === winner);
-              const lp = game.players.find(({ id }) => id === loser);
-              if (point === null || wp === undefined) return;
-
-              const baseScore = scoreTable[point] / 4;
-              // ツモ
-              if (lp === undefined) {
-                let score = 0;
-                game.players.forEach((p) => {
-                  if (p.id === winner) return;
-                  const s =
-                    (winner === parent || p.id === parent ? 2 : 1) * baseScore +
-                    100 * game.honba;
-                  p.score -= s;
-                  score += s;
-                });
-                wp.score += score;
-              }
-              // ロン
+              if (winner === null || winner === parent) game.honba++;
               else {
-                const score =
-                  (winner === parent ? 6 : 4) * baseScore +
-                  100 * game.honba * (players.length - 1);
-                lp.score -= score;
-                wp.score += score;
+                game.kyoku++;
+                game.honba = 0;
               }
-            };
-            mutateScore();
-
-            // トビがいれば終了
-            if (game.players.some((p) => p.score < 0)) return;
-            // オーラス
-            const isParentTop =
-              game.players.toSorted((a, b) => b.score - a.score)[0].id ===
-              parent;
-            if (
-              game.kyoku === game.players.length &&
-              (isParentTop || (winner !== null && winner !== parent))
-            )
-              return;
-
-            if (winner === null || winner === parent) game.honba++;
-            else {
-              game.kyoku++;
-              game.honba = 0;
-            }
-          });
-          setWinner(null);
-          setLoser(null);
-          setPoint(null);
-        }}
-      >
-        清算
-      </Clearance>
+            });
+            setWinner(null);
+            setLoser(null);
+            setPoint(null);
+          }}
+        >
+          清算
+        </Button>
+      )}
     </Root>
   );
 }
@@ -217,7 +247,7 @@ const Point = styled.input`
   width: 40px;
 `;
 
-const Clearance = styled.button`
+const Button = styled.button`
   font-size: 24px;
   width: 200px;
   align-self: center;
@@ -231,3 +261,12 @@ const scoreTable = [
   56000, 60000, 60000, 64000, 64000, 68000, 68000, 72000, 72000, 76000, 76000,
   80000, 80000, 84000, 84000, 88000, 88000, 92000,
 ];
+
+function shufflePlayers(players: Player[]): Player[] {
+  const result = [...players];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
