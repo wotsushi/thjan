@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import type { Game, Player } from "./Game";
+import type { Game, Player } from "./GameSection";
 import { useState } from "react";
 
 export function Control({
@@ -19,7 +19,7 @@ export function Control({
         <Selector>
           <Title>和了</Title>
           <Options>
-            {game.players.map(({ name, id }) => (
+            {game.participants().map(({ name, id }) => (
               <Radio
                 key={id}
                 name="winner"
@@ -33,7 +33,7 @@ export function Control({
         <Selector>
           <Title>放銃</Title>
           <Options>
-            {game.players.map(({ name, id }) => (
+            {game.participants().map(({ name, id }) => (
               <Radio
                 key={id}
                 name="loser"
@@ -61,23 +61,17 @@ export function Control({
       {game.kyoku === 0 ? (
         <Button
           type="button"
-          disabled={
-            game.players.filter(
-              ({ partner, name }) => partner !== null && name !== null
-            ).length < 2
-          }
+          disabled={game.participants().length < 2}
           onClick={() =>
             mutateGame((game) => {
               game.kyoku = 1;
               game.honba = 0;
-              game.players.forEach((player) => {
+              game.participants().forEach((player) => {
                 player.score = 20000;
               });
-              const players = shufflePlayers(
-                game.players.filter(({ partner }) => partner !== null)
-              );
+              const players = shufflePlayers(game.participants());
               game.players = players.concat(
-                game.players.filter(({ partner }) => partner === null)
+                game.players.filter((p) => p.isNull())
               );
             })
           }
@@ -106,36 +100,36 @@ export function Control({
                 const baseScore = scoreTable[point] / 4;
                 // ツモ
                 if (lp === undefined) {
-                  let score = 0;
-                  game.players.forEach((p) => {
+                  game.participants().forEach((p) => {
                     if (p.id === winner) return;
                     const s =
                       (winner === parent || p.id === parent ? 2 : 1) *
                         baseScore +
                       100 * game.honba;
-                    p.score -= s;
-                    score += s;
+                    p.addScore(-s);
+                    wp.addScore(s);
                   });
-                  wp.score += score;
                 }
                 // ロン
                 else {
                   const score =
                     (winner === parent ? 6 : 4) * baseScore +
-                    100 * game.honba * (game.players.length - 1);
-                  lp.score -= score;
-                  wp.score += score;
+                    100 * game.honba * (game.participants().length - 1);
+                  lp.addScore(-score);
+                  wp.addScore(score);
                 }
               };
               mutateScore();
 
               const isParentTop =
-                game.players.toSorted((a, b) => b.score - a.score)[0].id ===
+                game
+                  .participants()
+                  .toSorted((a, b) => b.getScore() - a.getScore())[0].id ===
                 parent;
 
               if (
-                game.players.some((p) => p.score < 0) || // トビがいれば終了
-                (game.kyoku === game.players.length &&
+                game.participants().some((p) => p.getScore() < 0) || // トビがいれば終了
+                (game.kyoku === game.participants().length &&
                   (isParentTop || (winner !== null && winner !== parent))) // オーラス
               ) {
                 game.kyoku = 0;

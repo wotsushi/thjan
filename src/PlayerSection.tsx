@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import type { Player } from "./Game";
+import type { Player } from "./GameSection";
 import { UnknownCard } from "./card";
 
-export function Player({
+export function PlayerSection({
   player,
   setName,
   showPartnerModal,
@@ -25,7 +25,7 @@ export function Player({
             onChange={(e) => setName(e.target.value)}
           ></Name>
         </div>
-        <Point>{player.score.toLocaleString()}</Point>
+        <Point>{player.score?.toLocaleString()}</Point>
       </Right>
     </Root>
   );

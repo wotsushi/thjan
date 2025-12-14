@@ -2,12 +2,12 @@ import styled from "styled-components";
 
 import "./App.css";
 import { HandList } from "./HandList";
-import { Game } from "./Game";
+import { GameSection } from "./GameSection";
 
 function App() {
   return (
     <Root>
-      <Game />
+      <GameSection />
       <HandList />
     </Root>
   );

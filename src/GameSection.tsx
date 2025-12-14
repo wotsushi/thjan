@@ -2,40 +2,56 @@ import styled from "styled-components";
 import { Bonus } from "./Bonus";
 import { useState } from "react";
 import { type Card } from "./card";
-import { Player } from "./Player";
+import { PlayerSection } from "./PlayerSection";
 import { Control } from "./Control";
 import { PartnerModal } from "./PartnerModal";
 
-export type Game = {
-  kyoku: number;
-  honba: number;
-  players: Player[];
-};
+export class Game {
+  constructor(
+    public kyoku: number,
+    public honba: number,
+    public players: Player[]
+  ) {}
+  participants(): Player[] {
+    return this.players.filter((p) => !p.isNull());
+  }
+}
 
-export type Player = {
-  id: number;
-  partner: Card | null;
-  name: string;
-  score: number;
-};
+export class Player {
+  constructor(
+    public id: number,
+    public partner: Card | null,
+    public name: string,
+    public score: number | null
+  ) {}
+  isNull() {
+    return this.partner === null || this.name === "";
+  }
+  addScore(s: number) {
+    if (this.score !== null) {
+      this.score += s;
+    }
+  }
+  getScore() {
+    return this.score ?? 0;
+  }
+}
 
-export function Game() {
-  const [game, setGame] = useState<Game>({
-    kyoku: 0,
-    honba: 0,
-    players: [...Array(4)].map((_, i) => ({
-      id: i,
-      partner: null,
-      name: "",
-      score: 20000,
-    })),
-  });
+export function GameSection() {
+  const [game, setGame] = useState(
+    new Game(
+      0,
+      0,
+      [...Array(4)].map((_, i) => new Player(i, null, "", null))
+    )
+  );
   const mutateGame = (mutator: (game: Game) => void) => {
     setGame((game) => {
-      const copy = {
-        ...game,
-        players: game.players.map((p) => ({ ...p })),
-      };
+      const copy = new Game(
+        game.kyoku,
+        game.honba,
+        game.players.map((p) => new Player(p.id, p.partner, p.name, p.score))
+      );
       mutator(copy);
       return copy;
     });
@@ -53,7 +69,7 @@ export function Game() {
       </Header>
       <div>
         {game.players.map((player, i) => (
-          <Player
+          <PlayerSection
             key={player.id}
             player={player}
             setName={(name) =>
