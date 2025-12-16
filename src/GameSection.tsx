@@ -3,11 +3,13 @@ import { Bonus } from "./Bonus";
 import { useState } from "react";
 import { type Card } from "./card";
 import { PlayerSection } from "./PlayerSection";
-import { Control } from "./Control";
+import { GameControl } from "./GameControl";
 import { PartnerModal } from "./PartnerModal";
+import { ModeControl } from "./ModeControl";
 
 export class Game {
   constructor(
+    public matchType: MatchType,
     public kyoku: number,
     public honba: number,
     public players: Player[]
@@ -15,7 +17,24 @@ export class Game {
   participants(): Player[] {
     return this.players.filter((p) => !p.isNull());
   }
+  getParent(): Player {
+    const participants = this.participants();
+    return participants[(this.kyoku - 1) % participants.length];
+  }
+  isLastRound(): boolean {
+    const participants = this.participants();
+    return this.matchType === MatchType.Single
+      ? this.kyoku === participants.length
+      : this.kyoku === 2 * participants.length;
+  }
 }
+
+export const MatchType = {
+  Single: "Single",
+  Double: "Double",
+} as const;
+
+export type MatchType = (typeof MatchType)[keyof typeof MatchType];
 
 export class Player {
   constructor(
@@ -40,6 +59,7 @@ export class Player {
 export function GameSection() {
   const [game, setGame] = useState(
     new Game(
+      MatchType.Double,
       0,
       0,
       [...Array(4)].map((_, i) => new Player(i, null, "", null))
@@ -48,6 +68,7 @@ export function GameSection() {
   const mutateGame = (mutator: (game: Game) => void) => {
     setGame((game) => {
       const copy = new Game(
+        game.matchType,
         game.kyoku,
         game.honba,
         game.players.map((p) => new Player(p.id, p.partner, p.name, p.score))
@@ -81,7 +102,11 @@ export function GameSection() {
           />
         ))}
       </div>
-      <Control game={game} mutateGame={mutateGame} />
+      {game.kyoku === 0 ? (
+        <ModeControl game={game} mutateGame={mutateGame} />
+      ) : (
+        <GameControl game={game} mutateGame={mutateGame} />
+      )}
       <PartnerModal
         isOpen={partnerModal !== null}
         setPartner={(card: Card) =>
