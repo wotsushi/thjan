@@ -184,7 +184,7 @@ export const Cards = {
 } as const satisfies Record<string, Card>;
 
 const Img = styled.img<{ $mini?: boolean }>`
-  width: ${({ $mini }) => ($mini ? "38px" : "81px")};
+  width: ${({ $mini }) => ($mini ? "37px" : "81px")};
 `;
 
 export const UnknownCard = styled.div`

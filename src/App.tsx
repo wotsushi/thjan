@@ -17,6 +17,7 @@ const Root = styled.div`
   display: flex;
   height: 100vh;
   padding-top: 16px;
+  gap: 40px;
 `;
 
 export default App;

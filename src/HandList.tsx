@@ -6,18 +6,28 @@ export function HandList() {
   return (
     <Root>
       <Hands>
-        {trios.map(({ name, cards }) => (
-          <Hand key={name} cards={cards} />
+        {trios.slice(0, 13).map(({ name, cards }) => (
+          <Hand key={name} name={name} cards={cards} />
+        ))}
+      </Hands>
+      <Hands>
+        {trios.slice(13, 25).map(({ name, cards }) => (
+          <Hand key={name} name={name} cards={cards} />
+        ))}
+      </Hands>
+      <Hands>
+        {trios.slice(25).map(({ name, cards }) => (
+          <Hand key={name} name={name} cards={cards} />
         ))}
       </Hands>
       <Hands>
         {quartets.map(({ name, cards }) => (
-          <Hand key={name} cards={cards} />
+          <Hand key={name} name={name} cards={cards} />
         ))}
       </Hands>
       <Hands>
         {sextets.map(({ name, cards }) => (
-          <Hand key={name} cards={cards} />
+          <Hand key={name} name={name} cards={cards} />
         ))}
       </Hands>
     </Root>
@@ -26,21 +36,32 @@ export function HandList() {
 
 const Root = styled.div`
   display: flex;
-  column-gap: 30px;
+  gap: 15px;
   height: 100%;
 `;
 
 const Hands = styled.div`
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
-  column-gap: 30px;
   height: 100%;
 `;
 
-function Hand({ cards }: { cards: Card[] }) {
-  return <div>{cards.map((card) => card.img({ mini: true }))}</div>;
+function Hand({ name, cards }: { name: string; cards: Card[] }) {
+  return (
+    <div>
+      <Name>{name}</Name>
+      <HandCards>{cards.map((card) => card.img({ mini: true }))}</HandCards>
+    </div>
+  );
 }
+
+const Name = styled.div`
+  font-size: 15px;
+`;
+
+const HandCards = styled.div`
+  height: 42px;
+`;
 
 const trios: {
   name: string;
@@ -75,7 +96,7 @@ const trios: {
     cards: [Cards.satori, Cards.orin, Cards.utuho],
   },
   {
-    name: "プリズムリバーライブ",
+    name: "プリズムリバーライブ(6P)",
     cards: [Cards.lunasa, Cards.merlin, Cards.lyrica],
   },
   {
@@ -135,7 +156,7 @@ const trios: {
     cards: [Cards.momiji, Cards.aya, Cards.hatate],
   },
   {
-    name: "三妖精",
+    name: "三妖精(6P)",
     cards: [Cards.sunny, Cards.luna, Cards.star],
   },
   {
@@ -269,7 +290,7 @@ const sextets: {
   {
     name: "「全人類の緋想天」",
     cards: [
-      Cards.reisen,
+      Cards.udonge,
       Cards.komachi,
       Cards.aya,
       Cards.suika,
