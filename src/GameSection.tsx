@@ -54,6 +54,10 @@ export class Player {
   getScore() {
     return this.score ?? 0;
   }
+
+  static nullPlayer(id: number) {
+    return new Player(id, null, "", null);
+  }
 }
 
 export function GameSection() {
@@ -62,7 +66,7 @@ export function GameSection() {
       MatchType.Double,
       0,
       0,
-      [...Array(4)].map((_, i) => new Player(i, null, "", null))
+      [...Array(4)].map((_, i) => Player.nullPlayer(i + 1))
     )
   );
   const mutateGame = (mutator: (game: Game) => void) => {
@@ -112,7 +116,8 @@ export function GameSection() {
         setPartner={(card: Card) =>
           mutateGame((current) => {
             if (partnerModal !== null) {
-              current.players[partnerModal].partner = card;
+              const player = current.players.find((p) => p.id === partnerModal);
+              if (player) player.partner = card;
             }
           })
         }
