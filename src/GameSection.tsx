@@ -6,6 +6,7 @@ import { PlayerSection } from "./PlayerSection";
 import { GameControl } from "./GameControl";
 import { PartnerModal } from "./PartnerModal";
 import { ModeControl } from "./ModeControl";
+import { calcScores } from "./calcScores";
 
 export class Game {
   constructor(
@@ -17,7 +18,8 @@ export class Game {
   participants(): Player[] {
     return this.players.filter((p) => !p.isNull());
   }
-  getParent(): Player {
+  getParent(): Player | null {
+    if (this.kyoku === 0) return null;
     const participants = this.participants();
     return participants[(this.kyoku - 1) % participants.length];
   }
@@ -69,6 +71,10 @@ export function GameSection() {
       [...Array(4)].map((_, i) => Player.nullPlayer(i + 1))
     )
   );
+  const [winner, setWinner] = useState<number | null>(null);
+  const [loser, setLoser] = useState<number | null>(null);
+  const [point, setPoint] = useState<number | null>(null);
+
   const mutateGame = (mutator: (game: Game) => void) => {
     setGame((game) => {
       const copy = new Game(
@@ -82,6 +88,7 @@ export function GameSection() {
     });
   };
   const [partnerModal, setPartnerModal] = useState<number | null>(null);
+  const diffScores = calcScores(game, winner, loser, point);
 
   return (
     <div>
@@ -97,6 +104,7 @@ export function GameSection() {
           <PlayerSection
             key={player.id}
             player={player}
+            diff={diffScores.at(i)}
             setName={(name) =>
               mutateGame((current) => {
                 current.players[i].name = name;
@@ -109,7 +117,16 @@ export function GameSection() {
       {game.kyoku === 0 ? (
         <ModeControl game={game} mutateGame={mutateGame} />
       ) : (
-        <GameControl game={game} mutateGame={mutateGame} />
+        <GameControl
+          game={game}
+          winner={winner}
+          loser={loser}
+          point={point}
+          setWinner={setWinner}
+          setLoser={setLoser}
+          setPoint={setPoint}
+          mutateGame={mutateGame}
+        />
       )}
       <PartnerModal
         isOpen={partnerModal !== null}

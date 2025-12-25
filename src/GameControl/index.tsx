@@ -1,20 +1,27 @@
 import styled from "styled-components";
 import type { Game } from "../GameSection";
-import { useState } from "react";
 import Radio from "../Radio";
 import { clearance } from "./index.internal";
 
 export function GameControl({
   game,
+  winner,
+  loser,
+  point,
+  setWinner,
+  setLoser,
+  setPoint,
   mutateGame,
 }: {
   game: Game;
+  winner: number | null;
+  loser: number | null;
+  point: number | null;
+  setWinner: (winner: number | null) => void;
+  setLoser: (loser: number | null) => void;
+  setPoint: (point: number | null) => void;
   mutateGame: (mutator: (game: Game) => void) => void;
 }) {
-  const [winner, setWinner] = useState<number | null>(null);
-  const [loser, setLoser] = useState<number | null>(null);
-  const [point, setPoint] = useState<number | null>(null);
-
   return (
     <Root>
       <Selectors>

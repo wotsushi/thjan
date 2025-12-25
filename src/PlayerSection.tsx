@@ -4,10 +4,12 @@ import { UnknownCard } from "./card";
 
 export function PlayerSection({
   player,
+  diff,
   setName,
   showPartnerModal,
 }: {
   player: Player;
+  diff?: number;
   setName: (name: string) => void;
   showPartnerModal: () => void;
 }) {
@@ -26,6 +28,10 @@ export function PlayerSection({
           ></Name>
         </div>
         <Point>{player.score?.toLocaleString()}</Point>
+        <Diff $diff={diff}>
+          {diff !== undefined &&
+            (diff > 0 ? `+${diff.toLocaleString()}` : diff < 0 && diff.toLocaleString())}
+        </Diff>
       </Right>
     </Root>
   );
@@ -42,6 +48,7 @@ const Right = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: end;
 `;
 
 const Name = styled.input`
@@ -52,6 +59,11 @@ const Name = styled.input`
 const Point = styled.div`
   font-size: 48px;
   font-weight: bold;
-  text-align: left;
-  margin-left: 24px;
+`;
+
+const Diff = styled.div<{ $diff?: number }>`
+  color: ${({ $diff }) => (($diff ?? 0) >= 0 ? "#16A34A" : "#DC2626")};
+  font-size: 36px;
+  font-weight: bold;
+  height: 43px;
 `;
