@@ -43,6 +43,7 @@ const Root = styled.div`
 const Hands = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 4px;
   height: 100%;
 `;
 

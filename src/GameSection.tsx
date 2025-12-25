@@ -91,7 +91,7 @@ export function GameSection() {
   const diffScores = calcScores(game, winner, loser, point);
 
   return (
-    <div>
+    <Root>
       <Header key={`${game.kyoku}-${game.honba}`}>
         <Round>
           <Kyoku>第{game.kyoku}局</Kyoku>
@@ -140,9 +140,15 @@ export function GameSection() {
         }
         onClose={() => setPartnerModal(null)}
       />
-    </div>
+    </Root>
   );
 }
+
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
 
 const Header = styled.div`
   display: flex;

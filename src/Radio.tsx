@@ -17,7 +17,7 @@ const RadioLabel = styled.label`
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 24px;
 `;
 
 const RadioInput = styled.input.attrs({ type: "radio" })`

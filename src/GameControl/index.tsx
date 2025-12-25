@@ -53,9 +53,8 @@ export function GameControl({
             ))}
           </Options>
         </Selector>
-      </Selectors>
       <PointContainer>
-        <Title>ポイント</Title>
+        <Title>P</Title>
         <Point
           type="number"
           name="point"
@@ -67,6 +66,7 @@ export function GameControl({
           }
         />
       </PointContainer>
+      </Selectors>
       <Button
         type="button"
         disabled={
@@ -96,7 +96,7 @@ const Root = styled.div`
 
 const Selectors = styled.div`
   display: flex;
-  column-gap: 24px;
+  column-gap: 16px;
 `;
 
 const Selector = styled.div`
@@ -104,7 +104,8 @@ const Selector = styled.div`
 `;
 
 const Title = styled.span`
-  font-size: 32px;
+  font-size: 36px;
+  text-align: center; 
 `;
 
 const Options = styled.div`
@@ -115,7 +116,9 @@ const Options = styled.div`
 
 const PointContainer = styled.div`
   display: flex;
-  column-gap: 12px;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 `;
 
 const Point = styled.input`
@@ -128,4 +131,3 @@ const Button = styled.button`
   width: 200px;
   align-self: center;
 `;
-
