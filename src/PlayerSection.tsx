@@ -4,11 +4,13 @@ import { UnknownCard } from "./card";
 
 export function PlayerSection({
   player,
+  isParent,
   diff,
   setName,
   showPartnerModal,
 }: {
   player: Player;
+  isParent: boolean;
   diff?: number;
   setName: (name: string) => void;
   showPartnerModal: () => void;
@@ -16,7 +18,7 @@ export function PlayerSection({
   return (
     <Root>
       <Left onClick={showPartnerModal}>
-        {player.partner?.img() ?? <UnknownCard />}
+        {player.partner?.img({ bordered: isParent }) ?? <UnknownCard />}
       </Left>
       <Right>
         <div>
@@ -30,7 +32,9 @@ export function PlayerSection({
         <Point>{player.score?.toLocaleString()}</Point>
         <Diff $diff={diff}>
           {diff !== undefined &&
-            (diff > 0 ? `+${diff.toLocaleString()}` : diff < 0 && diff.toLocaleString())}
+            (diff > 0
+              ? `+${diff.toLocaleString()}`
+              : diff < 0 && diff.toLocaleString())}
         </Diff>
       </Right>
     </Root>

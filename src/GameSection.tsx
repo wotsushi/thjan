@@ -104,6 +104,7 @@ export function GameSection() {
           <PlayerSection
             key={player.id}
             player={player}
+            isParent={game.getParent()?.id === player.id}
             diff={diffScores.at(i)}
             setName={(name) =>
               mutateGame((current) => {

@@ -87,8 +87,16 @@ import mamizou from "./assets/83mamizou.png";
 
 export class Card {
   constructor(private src: string, public name: string) {}
-  img({ mini }: { mini?: boolean } = {}) {
-    return <Img key={this.src} src={this.src} alt={this.name} $mini={mini} />;
+  img({ mini, bordered }: { mini?: boolean; bordered?: boolean } = {}) {
+    return (
+      <Img
+        key={this.src}
+        src={this.src}
+        alt={this.name}
+        $mini={mini}
+        $bordered={bordered}
+      />
+    );
   }
 }
 
@@ -183,8 +191,11 @@ export const Cards = {
   mamizou: card(mamizou, "マミゾウ"),
 } as const satisfies Record<string, Card>;
 
-const Img = styled.img<{ $mini?: boolean }>`
+const Img = styled.img<{ $mini?: boolean; $bordered?: boolean }>`
   width: ${({ $mini }) => ($mini ? "37px" : "81px")};
+  border: ${({ $bordered }) => ($bordered ? "4px solid white" : "none")};
+  border-radius: 8px;
+  box-sizing: border-box;
 `;
 
 export const UnknownCard = styled.div`
