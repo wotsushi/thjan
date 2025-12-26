@@ -1,6 +1,6 @@
 import { Cards } from "../card";
 import { Game, MatchType, Player } from "../GameSection";
-import { clearance } from "./index.internal";
+import { clearance } from "./clearance.internal";
 
 describe("清算", () => {
   describe("四打ち", () => {

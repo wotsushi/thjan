@@ -62,33 +62,53 @@ export class Player {
   }
 }
 
-export function GameSection() {
-  const [game, setGame] = useState(
-    new Game(
-      MatchType.Double,
-      0,
-      0,
-      [...Array(4)].map((_, i) => Player.nullPlayer(i + 1))
-    )
-  );
-  const [winner, setWinner] = useState<number | null>(null);
-  const [loser, setLoser] = useState<number | null>(null);
-  const [point, setPoint] = useState<number | null>(null);
+export function GameSection({
+  setFinishModal,
+  bonus,
+  setBonus,
+  uraBonus,
+  setUraBonus,
+  winner,
+  setWinner,
+  loser,
+  setLoser,
+  ippatsu,
+  setIppatsu,
+  totalPoint,
+  game,
+  setGame,
+}: {
+  finishModal: boolean;
+  setFinishModal: (open: boolean) => void;
+  hand: Card[];
+  setHand: (cards: Card[]) => void;
+  bonus: Card;
+  setBonus: (bonus: Card) => void;
+  uraBonus: Card | null;
+  setUraBonus: (uraBonus: Card | null) => void;
+  winner: number | null;
+  setWinner: (winner: number | null) => void;
+  loser: number | null;
+  setLoser: (loser: number | null) => void;
+  ippatsu: boolean;
+  setIppatsu: (ippatsu: boolean) => void;
+  totalPoint: number | null;
+  game: Game;
+  setGame: (game: Game) => void;
+}) {
 
   const mutateGame = (mutator: (game: Game) => void) => {
-    setGame((game) => {
-      const copy = new Game(
-        game.matchType,
-        game.kyoku,
-        game.honba,
-        game.players.map((p) => new Player(p.id, p.partner, p.name, p.score))
-      );
-      mutator(copy);
-      return copy;
-    });
+    const copy = new Game(
+      game.matchType,
+      game.kyoku,
+      game.honba,
+      game.players.map((p) => new Player(p.id, p.partner, p.name, p.score))
+    );
+    mutator(copy);
+    setGame(copy);
   };
   const [partnerModal, setPartnerModal] = useState<number | null>(null);
-  const diffScores = calcScores(game, winner, loser, point);
+  const diffScores = calcScores(game, winner, loser, totalPoint);
 
   return (
     <Root>
@@ -97,7 +117,7 @@ export function GameSection() {
           <Kyoku>第{game.kyoku}局</Kyoku>
           <Honba>{game.honba}本場</Honba>
         </Round>
-        <Bonus />
+        <Bonus bonus={bonus} uraBonus={uraBonus} setUraBonus={setUraBonus} />
       </Header>
       <div>
         {game.players.map((player, i) => (
@@ -122,11 +142,14 @@ export function GameSection() {
           game={game}
           winner={winner}
           loser={loser}
-          point={point}
+          ippatsu={ippatsu}
           setWinner={setWinner}
           setLoser={setLoser}
-          setPoint={setPoint}
-          mutateGame={mutateGame}
+          setIppatsu={setIppatsu}
+          setFinishModal={setFinishModal}
+          setGame={setGame}
+          setBonus={setBonus}
+          setUraBonus={setUraBonus}
         />
       )}
       <PartnerModal

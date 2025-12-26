@@ -1,28 +1,33 @@
 import styled from "styled-components";
 import { Card, Cards, UnknownCard } from "./card";
-import { useState } from "react";
 
-export function Bonus() {
-  const [bonus] = useState(randomCard());
-  const [uraBonus, setUraBonus] = useState<Card | null>(null);
+function randomCard(): Card {
+  return Object.values(Cards)[
+    Math.floor(Math.random() * Object.values(Cards).length)
+  ];
+}
+
+export function Bonus({
+  bonus,
+  uraBonus,
+  setUraBonus,
+}: {
+  bonus: Card;
+  uraBonus: Card | null;
+  setUraBonus: (uraBonus: Card | null) => void;
+}) {
   return (
     <Root>
       <BonusContainer>
         <BonusLabel>ボーナス</BonusLabel>
         {bonus.img()}
       </BonusContainer>
-      <BonusContainer onClick={() => setUraBonus((b) => b ?? randomCard())}>
+      <BonusContainer onClick={() => setUraBonus(uraBonus ? null : randomCard())}>
         <BonusLabel>裏ボーナス</BonusLabel>
         {uraBonus ? uraBonus.img() : <UnknownCard />}
       </BonusContainer>
     </Root>
   );
-}
-
-function randomCard(): Card {
-  return Object.values(Cards)[
-    Math.floor(Math.random() * Object.values(Cards).length)
-  ];
 }
 
 const Root = styled.div`

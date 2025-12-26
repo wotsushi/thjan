@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "target": "ES2023",
+    "target": "esnext",
     "useDefineForClassFields": true,
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "types": ["vite/client", "vitest/globals"],
     "skipLibCheck": true,
@@ -24,10 +24,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": [
-    "src",
-    "setupTests.ts",
-    "**/*.test.ts",
-    "**/*.test.tsx"
-  ]
+  "include": ["src", "setupTests.ts", "**/*.test.ts", "**/*.test.tsx"]
 }

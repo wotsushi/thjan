@@ -1,27 +1,73 @@
 import styled from "styled-components";
-import type { Game } from "../GameSection";
+import { Game, Player } from "../GameSection";
 import Radio from "../Radio";
-import { clearance } from "./index.internal";
+import type { Card } from "../card";
+import { Cards } from "../card";
+
+function randomCard(): Card {
+  return Object.values(Cards)[
+    Math.floor(Math.random() * Object.values(Cards).length)
+  ];
+}
 
 export function GameControl({
   game,
   winner,
   loser,
-  point,
+  ippatsu,
   setWinner,
   setLoser,
-  setPoint,
-  mutateGame,
+  setIppatsu,
+  setFinishModal,
+  setGame,
+  setBonus,
+  setUraBonus,
 }: {
   game: Game;
   winner: number | null;
   loser: number | null;
-  point: number | null;
+  ippatsu: boolean;
   setWinner: (winner: number | null) => void;
   setLoser: (loser: number | null) => void;
-  setPoint: (point: number | null) => void;
-  mutateGame: (mutator: (game: Game) => void) => void;
+  setIppatsu: (ippatsu: boolean) => void;
+  setFinishModal: (open: boolean) => void;
+  setGame: (game: Game) => void;
+  setBonus: (bonus: Card) => void;
+  setUraBonus: (uraBonus: Card | null) => void;
 }) {
+  const handleRyukyoku = () => {
+    if (window.confirm("流局しますか？")) {
+      const parent = game.getParent()?.id;
+      if (parent === undefined) return;
+
+      const isParentTop =
+        game.participants().toSorted((a, b) => b.getScore() - a.getScore())[0]
+          .id === parent;
+
+      let newKyoku = game.kyoku;
+      let newHonba = game.honba;
+
+      // オーラスで親がトップならゲーム終了
+      if (game.isLastRound() && isParentTop) {
+        newKyoku = 0;
+        newHonba = 0;
+      } else {
+        // それ以外は本場+1
+        newHonba = game.honba + 1;
+      }
+
+      const newGame = new Game(
+        game.matchType,
+        newKyoku,
+        newHonba,
+        game.players.map((p) => new Player(p.id, p.partner, p.name, p.score))
+      );
+      setGame(newGame);
+      setBonus(randomCard());
+      setUraBonus(null);
+    }
+  };
+
   return (
     <Root>
       <Selectors>
@@ -53,36 +99,29 @@ export function GameControl({
             ))}
           </Options>
         </Selector>
-      <PointContainer>
-        <Title>P</Title>
-        <Point
-          type="number"
-          name="point"
-          min="3"
-          max="52"
-          value={point ?? ""}
-          onChange={(e) =>
-            setPoint(e.target.value ? Number(e.target.value) : null)
-          }
-        />
-      </PointContainer>
+        <IppatsuContainer>
+          <Title>一発</Title>
+          <Checkbox
+            type="checkbox"
+            checked={ippatsu}
+            onChange={(e) => setIppatsu(e.target.checked)}
+          />
+        </IppatsuContainer>
       </Selectors>
-      <Button
-        type="button"
-        disabled={
-          (winner !== null && point === null) ||
-          (winner !== null && winner === loser) ||
-          (winner === null && loser !== null)
-        }
-        onClick={() => {
-          mutateGame((g) => clearance(g, winner, loser, point));
-          setWinner(null);
-          setLoser(null);
-          setPoint(null);
-        }}
-      >
-        清算
-      </Button>
+      {winner === null && loser === null ? (
+        <Button type="button" onClick={handleRyukyoku}>
+          流局
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          onClick={() => {
+            setFinishModal(true);
+          }}
+        >
+          アガリ
+        </Button>
+      )}
     </Root>
   );
 }
@@ -114,16 +153,17 @@ const Options = styled.div`
   gap: 4px;
 `;
 
-const PointContainer = styled.div`
+const IppatsuContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
 `;
 
-const Point = styled.input`
-  font-size: 32px;
-  width: 40px;
+const Checkbox = styled.input`
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 `;
 
 const Button = styled.button`
