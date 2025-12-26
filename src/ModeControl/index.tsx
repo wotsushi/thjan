@@ -1,6 +1,7 @@
 import styled from "styled-components";
-import { MatchType, type Game, type Player } from "./GameSection";
-import Radio from "./Radio";
+import { MatchType, type Game } from "../GameSection";
+import Radio from "../Radio";
+import { reset } from "./index.internal";
 
 export function ModeControl({
   game,
@@ -36,19 +37,7 @@ export function ModeControl({
       <Button
         type="button"
         disabled={game.participants().length < 2}
-        onClick={() =>
-          mutateGame((game) => {
-            game.kyoku = 1;
-            game.honba = 0;
-            game.participants().forEach((player) => {
-              player.score = 20000;
-            });
-            const players = shufflePlayers(game.participants());
-            game.players = players.concat(
-              game.players.filter((p) => p.isNull())
-            );
-          })
-        }
+        onClick={() => mutateGame(reset)}
       >
         開始
       </Button>
@@ -74,12 +63,3 @@ const Button = styled.button`
   width: 200px;
   align-self: center;
 `;
-
-function shufflePlayers(players: Player[]): Player[] {
-  const result = [...players];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-}
